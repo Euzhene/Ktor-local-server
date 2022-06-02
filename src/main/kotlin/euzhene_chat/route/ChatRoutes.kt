@@ -14,8 +14,7 @@ import kotlinx.coroutines.channels.consumeEach
 
 fun Route.chatSocket(roomController: RoomController) { //calls every single time a client connects to this route via websockets
     webSocket("/chat-socket") {
-        val socket =
-            call.sessions.get<ChatSession>()   //get the created session (we could create it here btw).
+        val socket = call.sessions.get<ChatSession>()   //get the created session (we could create it here btw).
         if (socket == null) {
             close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "No session"))
             return@webSocket

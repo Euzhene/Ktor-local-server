@@ -20,7 +20,7 @@ class ChatUserDataSourceImpl(db: CoroutineDatabase) : ChatUserDataSource {
     override suspend fun getUser(inputData: UserInputData): ChatUser? {
         return users.find(
             and(
-                eq(ChatUser::login.name, inputData.login),
+                eq("_id", inputData.login),
                 eq(ChatUser::password.name, inputData.password)
             )
         ).first()

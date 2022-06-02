@@ -21,7 +21,7 @@ class RoomController(
         sessionId: String,
         socket: WebSocketSession
     ) {
-        val chatUser = findUserInDb(userInputData)
+        val chatUser = loginOrRegisterUserInDb(userInputData)
         findMemberInDb(
             chatUser.login,
             chatUser.username,
@@ -63,12 +63,22 @@ class RoomController(
         if (members.containsKey(login)) {
             throw MemberAlreadyExistsException()
         }
-        members[username] = Member(
+        members[login] = Member(
             login, username, sessionId, socket
         )
     }
 
-    private suspend fun findUserInDb(userInputData: UserInputData): ChatUser {
+    private suspend fun loginOrRegisterUserInDb(userInputData: UserInputData): ChatUser {
+        val user = chatUserDataSource.getUser(userInputData)
+        if (user == null) {
+            val chatUser = ChatUser(
+                userInputData.login,
+                userInputData.password,
+                //todo throw UserNameNotProvidedException
+                userInputData.username!!
+            )
+            chatUserDataSource.insertUser(chatUser)
+        }
         return chatUserDataSource.getUser(userInputData) ?: throw UserNotExistsException()
     }
 }
