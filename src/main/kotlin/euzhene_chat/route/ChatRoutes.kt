@@ -21,14 +21,14 @@ fun Route.chatSocket(roomController: RoomController) { //calls every single time
         }
         try {
             roomController.onJoin(
-                username = socket.username,
+                userInputData = socket.inputData,
                 sessionId = socket.sessionId,
                 socket = this
             )
             //something like while(true) i.g. everything below doesn't execute
             incoming.consumeEach {//gets everything from a client's message
                 if (it is Frame.Text) {
-                    roomController.sendMessages(socket.username, it.readText())
+                    roomController.sendMessages(socket.inputData.login, it.readText())
                 }
             }
         } catch (e: MemberAlreadyExistsException) {
@@ -36,14 +36,14 @@ fun Route.chatSocket(roomController: RoomController) { //calls every single time
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
-            roomController.tryDisconnect(socket.username)
+            roomController.tryDisconnect(socket.inputData.login)
         }
 
     }
 }
 
-fun Route.getAllMessages(roomController: RoomController){
-    get("/messages"){ //get all the messages from DB and send it to a client
+fun Route.getAllMessages(roomController: RoomController) {
+    get("/messages") { //get all the messages from DB and send it to a client
         call.respond(HttpStatusCode.OK, roomController.getMessages())
     }
 
