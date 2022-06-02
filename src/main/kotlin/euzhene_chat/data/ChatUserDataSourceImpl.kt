@@ -1,8 +1,8 @@
-package euzhene_chat.data.model
+package euzhene_chat.data
 
-import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Filters.eq
-import euzhene_chat.data.ChatUserDataSource
+import euzhene_chat.data.model.ChatUser
+import euzhene_chat.data.model.UserInputData
 import org.litote.kmongo.and
 import org.litote.kmongo.coroutine.CoroutineDatabase
 
@@ -17,10 +17,11 @@ class ChatUserDataSourceImpl(db: CoroutineDatabase) : ChatUserDataSource {
         users.insertOne(user)
     }
 
-    override suspend fun getUser(login: String, password: String): ChatUser? {
+    override suspend fun getUser(inputData: UserInputData): ChatUser? {
         return users.find(
             and(
-                eq(ChatUser::login.name, login), eq(ChatUser::password.name, password)
+                eq(ChatUser::login.name, inputData.login),
+                eq(ChatUser::password.name, inputData.password)
             )
         ).first()
     }
