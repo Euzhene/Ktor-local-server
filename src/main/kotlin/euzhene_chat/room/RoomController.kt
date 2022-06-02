@@ -47,10 +47,10 @@ class RoomController(
         return messageDataSource.getMessages()
     }
 
-    suspend fun tryDisconnect(username: String) {
-        members[username]?.socket?.close()
-        if (members.containsKey(username)) {
-            members.remove(username)
+    suspend fun tryDisconnect(login: String) {
+        members[login]?.socket?.close()
+        if (members.containsKey(login)) {
+            members.remove(login)
         }
     }
 
