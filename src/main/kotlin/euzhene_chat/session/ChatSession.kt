@@ -1,6 +1,8 @@
 package euzhene_chat.session
 
+import euzhene_chat.data.model.UserInputData
+
 data class ChatSession(
-    val username:String,
+    val inputData: UserInputData,
     val sessionId:String,
 )
