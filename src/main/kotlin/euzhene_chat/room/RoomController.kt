@@ -31,8 +31,9 @@ class RoomController(
 
     }
 
-    suspend fun sendMessages(username: String, text: String) {
-        val messageEntity = Message(text, username, System.currentTimeMillis())
+    suspend fun sendMessages(login: String, text: String) {
+        val currentUser = members[login] ?: throw UserNotExistsException()
+        val messageEntity = Message(text, currentUser.username, System.currentTimeMillis())
         //add message to the DB
         messageDataSource.insertMessage(messageEntity)
         val parsedMessage = Json.encodeToString(messageEntity)
