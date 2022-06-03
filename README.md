@@ -10,7 +10,7 @@ A local server with http requests for my chat.
 
 <b>Libraries:</b>
 <ul>
-  <li>ktor (backend)</li>
+  <li>ktor (only server)</li>
     <li>KMongo</li>
     <li>Koin</li>
 </ul>
