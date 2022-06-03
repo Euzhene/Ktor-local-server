@@ -1,5 +1,5 @@
 # euzhene-chat.ktor-chat
-A local backend server for my chat. 
+A local server with http requests for my chat. 
 <br/>
 <b>Features:</b>
 - websocket for getting realtime messages
