@@ -6,11 +6,11 @@ A local server with http requests for my chat.
 - security meassures against repeated login requests
 - clean architecture
 - user authentication (login and registration)
-- Database for storing messages and users
+- database for storing messages and users
 
 <b>Libraries:</b>
 <ul>
-  <li>ktor (only server)</li>
+  <li>Ktor (only server)</li>
     <li>KMongo</li>
     <li>Koin</li>
 </ul>
