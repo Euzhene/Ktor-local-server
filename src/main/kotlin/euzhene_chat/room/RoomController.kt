@@ -21,19 +21,17 @@ class RoomController(
         sessionId: String,
         socket: WebSocketSession
     ) {
-        val chatUser = loginOrRegisterUserInDb(userInputData)
-        findMemberInDb(
-            chatUser.login,
-            chatUser.username,
-            sessionId,
-            socket
-        )
+        val chatUser = (getUserInDb(userInputData))
+        addMember(chatUser, sessionId, socket)
+    }
 
+    suspend fun register(userInputData: UserInputData): ChatUser {
+        return createUserInDb(userInputData)
     }
 
     suspend fun sendMessages(login: String, text: String) {
         val currentUser = members[login] ?: throw UserNotExistsException()
-        val messageEntity = Message(text, currentUser.username, System.currentTimeMillis())
+        val messageEntity = Message(text, currentUser.username)
         //add message to the DB
         messageDataSource.insertMessage(messageEntity)
         val parsedMessage = Json.encodeToString(messageEntity)
@@ -54,31 +52,37 @@ class RoomController(
         }
     }
 
-    private fun findMemberInDb(
-        login: String,
-        username: String,
+    private fun addMember(
+        chatUser: ChatUser,
         sessionId: String,
         socket: WebSocketSession
     ) {
-        if (members.containsKey(login)) {
+        if (members.containsKey(chatUser.login)) {
             throw MemberAlreadyExistsException()
         }
-        members[login] = Member(
-            login, username, sessionId, socket
-        )
+        members[chatUser.login] = Member(chatUser.login, chatUser.username, sessionId, socket)
     }
 
-    private suspend fun loginOrRegisterUserInDb(userInputData: UserInputData): ChatUser {
-        val user = chatUserDataSource.getUser(userInputData)
-        if (user == null) {
-            val chatUser = ChatUser(
-                userInputData.login,
-                userInputData.password,
-                //todo throw UserNameNotProvidedException
-                userInputData.username!!
-            )
-            chatUserDataSource.insertUser(chatUser)
+    suspend fun getUserInDb(userInputData: UserInputData): ChatUser {
+        val user = chatUserDataSource.getUser(userInputData.login) ?: throw UserNotExistsException()
+
+        if (user.password != userInputData.password) throw PasswordNotCorrectException()
+
+        return user
+    }
+
+    private suspend fun createUserInDb(userInputData: UserInputData): ChatUser {
+        val sameUserLogin = chatUserDataSource.canFindUser(userInputData.login)
+        if (sameUserLogin) {
+            throw LoginIsAlreadyTakenException()
         }
-        return chatUserDataSource.getUser(userInputData) ?: throw UserNotExistsException()
+
+        val chatUser = ChatUser(
+            userInputData.login,
+            userInputData.password,
+            userInputData.username ?: throw UsernameNotProvidedException()
+        )
+        chatUserDataSource.insertUser(chatUser)
+        return chatUserDataSource.getUser(userInputData.login) ?: throw UserNotExistsException()
     }
 }

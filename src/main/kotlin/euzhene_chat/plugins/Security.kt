@@ -2,6 +2,7 @@ package euzhene_chat.plugins
 
 
 import euzhene_chat.data.model.UserInputData
+import euzhene_chat.room.ParameterNotFoundException
 import euzhene_chat.session.ChatSession
 import io.ktor.application.*
 import io.ktor.sessions.*
@@ -16,8 +17,8 @@ fun Application.configureSecurity() {
     intercept(ApplicationCallPipeline.Features) {   //calls when a client connects to our server to create a session for them (handle a client's request)
         //call - respond on an url a client sends to server
         if (call.sessions.get<ChatSession>() == null) {
-            val login = call.parameters["login"].toString()
-            val password = call.parameters["password"].toString()
+            val login = call.parameters["login"] ?: throw ParameterNotFoundException()
+            val password = call.parameters["password"]?: throw ParameterNotFoundException()
             val username = call.parameters["username"]
             call.sessions.set(
                 ChatSession(
