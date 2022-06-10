@@ -1,5 +1,5 @@
-# euzhene-chat.ktor-chat
-A local server with http requests for my chat. 
+# Euzhene ktor server
+A local server with http requests for my chat. I use this server with my recent app that you can find <a href="https://github.com/Zhenya20062/ktorAndroidChat">here</a>
 <br/>
 <b>Features:</b>
 - websocket for getting realtime messages
